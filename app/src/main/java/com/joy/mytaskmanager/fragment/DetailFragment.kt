@@ -36,4 +36,11 @@ class DetailFragment : Fragment() {
             taskDescriptionText.text = it.description
         }
     }
+
+    override fun onStop() {
+        super.onStop()
+
+        // clear selected when this fragment is stopped, usually it is after the back is pressed
+        viewModel.selected.value = null
+    }
 }

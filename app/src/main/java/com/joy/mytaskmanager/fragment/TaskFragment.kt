@@ -55,7 +55,7 @@ class TaskFragment : Fragment() {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = MyTaskRecyclerViewAdapter(FakeTasksContent.ITEMS)
+                adapter = MyTaskRecyclerViewAdapter(FakeTasksContent.ITEMS, viewModel)
             }
         }
         return view
