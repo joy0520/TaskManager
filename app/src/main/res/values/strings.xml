@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MyTaskManager</string>
+    <string name="title">MyTaskManager</string>
 </resources>

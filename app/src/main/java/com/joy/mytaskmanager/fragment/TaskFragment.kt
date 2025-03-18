@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -31,6 +32,7 @@ class TaskFragment : Fragment() {
     }
 
     private var columnCount = 1
+    private val viewModel: MainViewModel by activityViewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -59,5 +61,17 @@ class TaskFragment : Fragment() {
         return view
     }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
 
+        viewModel.selected.observe(viewLifecycleOwner) {
+            it?.also {
+                requireActivity().supportFragmentManager
+                    .beginTransaction()
+                    .replace(R.id.task_container, DetailFragment.newInstance())
+                    .addToBackStack(null)
+                    .commit()
+            }
+        }
+    }
 }
