@@ -8,7 +8,6 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.joy.mytaskmanager.R
 import com.joy.mytaskmanager.data.Task
-import java.util.logging.Logger
 
 /**
  * [RecyclerView.Adapter] that can display a [PlaceholderItem].
@@ -16,7 +15,7 @@ import java.util.logging.Logger
  */
 class MyTaskRecyclerViewAdapter(
     private val values: List<Task>,
-    private val viewModel: MainViewModel
+    private val onItemClick: (Int) -> Unit  // less couple to the ViewModel
 ) : RecyclerView.Adapter<MyTaskRecyclerViewAdapter.ViewHolder>() {
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val taskTypeView: TextView = view.findViewById(R.id.task_type)
@@ -30,7 +29,7 @@ class MyTaskRecyclerViewAdapter(
                 Log.i("ViewHolder", "item clicked: $position")
                 if (position != RecyclerView.NO_POSITION) {
                     val clickedTask = values[position]
-                    viewModel.openTask(clickedTask)
+                    onItemClick(clickedTask.id)
                 }
             }
         }
@@ -48,9 +47,9 @@ class MyTaskRecyclerViewAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val item = values[position]
-        holder.taskTypeView.text = item.type
-        holder.taskDescriptionView.text = item.description
+        val task = values[position]
+        holder.taskTypeView.text = task.type
+        holder.taskDescriptionView.text = task.description
     }
 
     override fun getItemCount(): Int = values.size

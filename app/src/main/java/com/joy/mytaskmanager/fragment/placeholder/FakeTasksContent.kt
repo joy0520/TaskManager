@@ -31,6 +31,7 @@ object FakeTasksContent {
 
     private fun createTask(position: Int): Task {
         return Task(
+            position,
             "fake",
             "position: $position",
             ZonedDateTime.now(),

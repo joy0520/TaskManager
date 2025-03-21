@@ -8,6 +8,7 @@ import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import com.joy.mytaskmanager.R
+import com.joy.mytaskmanager.data.Task
 
 class DetailFragment : Fragment() {
     companion object {
@@ -15,6 +16,7 @@ class DetailFragment : Fragment() {
     }
 
     private val viewModel: MainViewModel by activityViewModels()
+    private var currentTask: Task? = null
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -31,7 +33,7 @@ class DetailFragment : Fragment() {
         // set texts
         val taskTypeText: TextView = view.findViewById(R.id.task_type)
         val taskDescriptionText: TextView = view.findViewById(R.id.task_description)
-        viewModel.selected.value?.also {
+        viewModel.navigateToDetail.value?.also {
             taskTypeText.text = it.type
             taskDescriptionText.text = it.description
         }
@@ -41,6 +43,25 @@ class DetailFragment : Fragment() {
         super.onStop()
 
         // clear selected when this fragment is stopped, usually it is after the back is pressed
-        viewModel.selected.value = null
+        viewModel.unselectCurrentTask()
+    }
+
+    fun updateTaskDetail(task: Task) {
+        currentTask = task
+        updateUiWithTask()
+    }
+
+    private fun updateUiWithTask() {
+        view?.let {
+            val taskTypeText: TextView = it.findViewById(R.id.task_type)
+            val taskDescriptionText: TextView = it.findViewById(R.id.task_description)
+            currentTask?.let { task ->
+                taskTypeText.text = task.type
+                taskDescriptionText.text = task.description
+            } ?: run {   // clear the content
+                taskTypeText.text = ""
+                taskDescriptionText.text = ""
+            }
+        }
     }
 }
