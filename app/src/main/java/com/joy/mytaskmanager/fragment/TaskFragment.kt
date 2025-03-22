@@ -37,6 +37,8 @@ class TaskFragment : Fragment() {
             }
     }
 
+    private val tag = "TaskFragment-${hashCode()}"
+
     private var columnCount = 1
     private val viewModel: MainViewModel by activityViewModels()
 
@@ -53,7 +55,7 @@ class TaskFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         val view = inflater.inflate(R.layout.task_fragment, container, false)
-        Log.i("TaskFragment", "onCreateView()")
+        Log.i(tag, "onCreateView() navigateToDetail=${viewModel.navigateToDetail.value}")
 
         // Set the adapter
         if (view is RecyclerView) {
@@ -68,51 +70,11 @@ class TaskFragment : Fragment() {
             }
         }
 
-        viewLifecycleOwner.lifecycleScope.launch {
-            Log.i("TaskFragment", "lifecycleScope.launch")
-            repeatOnLifecycle(Lifecycle.State.STARTED) {
-                Log.i("TaskFragment", "repeatOnLifecycle(Lifecycle.State.STARTED)")
-                viewModel.navigateToDetail.collect { task ->
-                    Log.i("TaskFragment", "collected $task")
-
-                    task?.also {
-                        when (resources.configuration.orientation) {
-                            Configuration.ORIENTATION_PORTRAIT -> {  // replace with DetailFragment
-                                Log.i("TaskFragment", "portrait")
-
-                                requireActivity().supportFragmentManager
-                                    .beginTransaction()
-                                    .replace(R.id.task_container, DetailFragment.newInstance())
-                                    .addToBackStack(null)
-                                    .commit()
-                            }
-
-                            Configuration.ORIENTATION_LANDSCAPE -> {  // find DetailFragment and update its content
-                                Log.i("TaskFragment", "landscape")
-
-                                val detailFragment = requireActivity().supportFragmentManager
-                                    .findFragmentByTag("DetailFragment") as? DetailFragment
-                                detailFragment?.updateTaskDetail(it)
-                            }
-
-                            else -> {}
-                        }
-                    }
-                }
-            }
-
-        }
-
         return view
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.i("TaskFragment", "onViewCreated()")
     }
 
     override fun onStop() {
         super.onStop()
-        Log.i("TaskFragment", "onStop()")
+        Log.i(tag, "onStop()")
     }
 }

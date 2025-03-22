@@ -33,7 +33,7 @@ object FakeTasksContent {
         return Task(
             position,
             "fake",
-            "position: $position",
+            "position=$position",
             ZonedDateTime.now(),
             ZonedDateTime.now()
         )

@@ -10,5 +10,5 @@ class Task(
     val end: ZonedDateTime,
 ) {
     override fun toString(): String =
-        "$type $description"
+        "id=$id $type $description"
 }
