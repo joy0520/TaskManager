@@ -1,12 +1,12 @@
 package com.joy.mytaskmanager.fragment
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
@@ -32,17 +32,28 @@ class DetailFragment : Fragment() {
     ): View? {
         Log.i(tag, "onCreateView()")
 
+        viewLifecycleOwner.lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                viewModel.navigateToDetail.collect { task ->
+                    task?.also { updateTaskDetail(it) }
+                }
+            }
+        }
+
         return inflater.inflate(R.layout.detail_fragment, container, false)
     }
 
     // after onCreateView()
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        Log.i(tag, "onViewCreated()")
 
         // set texts
         val taskTypeText: TextView = view.findViewById(R.id.task_type)
         val taskDescriptionText: TextView = view.findViewById(R.id.task_description)
-        viewModel.navigateToDetail.value?.also {
+        viewModel.navigateToDetail.value.also {
+            Log.i(tag, "navigateToDetail.value=$it")
+        }?.also {
             taskTypeText.text = it.type
             taskDescriptionText.text = it.description
         }
@@ -51,12 +62,10 @@ class DetailFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         Log.i(tag, "onStop()")
-
-        // clear selected when this fragment is stopped, usually it is after the back is pressed
-        viewModel.unselectCurrentTask()
     }
 
     fun updateTaskDetail(task: Task) {
+        Log.i(tag, "updateTaskDetail() $task")
         currentTask = task
         updateUiWithTask()
     }
