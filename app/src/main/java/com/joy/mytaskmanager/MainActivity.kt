@@ -3,7 +3,9 @@ package com.joy.mytaskmanager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.MenuItem
 import androidx.appcompat.app.AppCompatActivity
+import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -23,12 +25,35 @@ class MainActivity : AppCompatActivity() {
     private val detailFragmentP: DetailFragment by lazy { DetailFragment.newInstance() }
     private val detailFragmentL: DetailFragment by lazy { DetailFragment.newInstance() }
 
+    private val viewModel: MainViewModel by lazy { ViewModelProvider(this)[MainViewModel::class.java] }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         Log.i(TAG, "onCreate()")
         setContentView(R.layout.activity_main)
+        setupToolbar()
+        initViews()
+        subscribe()
+    }
 
-        val viewModel = ViewModelProvider(this)[MainViewModel::class.java]
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.i(TAG, "pressed $item")
+        if (item.itemId == android.R.id.home) {
+            if (supportFragmentManager.backStackEntryCount > 0) {
+                onBackPressedDispatcher.onBackPressed()
+            }
+            return true
+        }
+
+        return super.onOptionsItemSelected(item)
+    }
+
+    // +++ setup +++
+    private fun setupToolbar() {
+        setSupportActionBar(findViewById(R.id.toolbar))
+    }
+
+    private fun initViews() {
         Log.i(TAG, "navigateToDetail: ${viewModel.navigateToDetail.value}")
 
         when {
@@ -64,7 +89,9 @@ class MainActivity : AppCompatActivity() {
 
             else -> {}  // nothing for now
         }
+    }
 
+    private fun subscribe() {
         // observe MainViewModel.navigationToDetail and execute FragmentTransaction
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
@@ -86,6 +113,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
     }
+    // --- setup ---
 
     private fun isPortrait(): Boolean =
         resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -120,5 +148,7 @@ class MainActivity : AppCompatActivity() {
             .replace(R.id.fragment_container, detailFragmentP, "DetailFragmentP")
             .addToBackStack(null)
             .commit()
+
+        supportActionBar?.setDisplayHomeAsUpEnabled(true)
     }
 }
