@@ -4,15 +4,16 @@ import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.MenuItem
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.widget.Toolbar
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.joy.mytaskmanager.db.TaskDb
 import com.joy.mytaskmanager.fragment.DetailFragment
-import com.joy.mytaskmanager.fragment.MainViewModel
+import com.joy.mytaskmanager.model.MainViewModel
 import com.joy.mytaskmanager.fragment.TaskFragment
+import com.joy.mytaskmanager.model.TaskViewModelFactory
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -25,7 +26,11 @@ class MainActivity : AppCompatActivity() {
     private val detailFragmentP: DetailFragment by lazy { DetailFragment.newInstance() }
     private val detailFragmentL: DetailFragment by lazy { DetailFragment.newInstance() }
 
-    private val viewModel: MainViewModel by lazy { ViewModelProvider(this)[MainViewModel::class.java] }
+    private val taskDb by lazy { TaskDb.getDatabase(applicationContext) }
+    private val taskDao by lazy { taskDb.taskDao() }
+    private val taskViewModelFactory by lazy { TaskViewModelFactory(taskDao) }
+//    private val viewModel: MainViewModel by activityViewModels { taskViewModelFactory }
+    private val viewModel: MainViewModel by viewModels { taskViewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

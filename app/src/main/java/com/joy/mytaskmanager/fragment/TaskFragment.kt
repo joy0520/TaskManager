@@ -1,6 +1,5 @@
 package com.joy.mytaskmanager.fragment
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -8,15 +7,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.joy.mytaskmanager.R
-import com.joy.mytaskmanager.fragment.placeholder.FakeTasksContent
-import kotlinx.coroutines.launch
+import com.joy.mytaskmanager.adapter.TaskAdapter
+import com.joy.mytaskmanager.model.MainViewModel
 
 /**
  * A fragment representing a list of Items.
@@ -58,16 +54,24 @@ class TaskFragment : Fragment() {
         Log.i(tag, "onCreateView() navigateToDetail=${viewModel.navigateToDetail.value}")
 
         // Set the adapter
+        val taskAdapter = TaskAdapter(emptyList()) { taskId: Int ->
+            viewModel.selectTask(taskId)
+        }
+
         if (view is RecyclerView) {
             with(view) {
                 layoutManager = when {
                     columnCount <= 1 -> LinearLayoutManager(context)
                     else -> GridLayoutManager(context, columnCount)
                 }
-                adapter = MyTaskRecyclerViewAdapter(FakeTasksContent.ITEMS) { taskId: Int ->
-                    viewModel.selectTask(taskId)
-                }
+                adapter = taskAdapter
             }
+        }
+
+        // observe viewModel.tasks and update tasks in adapter
+        viewModel.tasks.observe(viewLifecycleOwner) { tasks ->
+            Log.i(tag, "observing allTasks: $tasks")
+            taskAdapter.submitList(tasks)
         }
 
         return view

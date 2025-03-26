@@ -19,6 +19,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.joy.mytaskmanager.R
 import com.joy.mytaskmanager.data.Task
+import com.joy.mytaskmanager.model.MainViewModel
 import kotlinx.coroutines.launch
 
 class DetailFragment : Fragment() {
@@ -73,6 +74,7 @@ class DetailFragment : Fragment() {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     Log.i(tag, "handleOnBackPressed()")
+                    viewModel.unselectCurrentTask()
                     parentFragmentManager.popBackStack()
                 }
             })
@@ -91,7 +93,7 @@ class DetailFragment : Fragment() {
         viewModel.navigateToDetail.value.also {
             Log.i(tag, "navigateToDetail.value=$it")
         }?.also {
-            taskTypeText.text = it.type
+            taskTypeText.text = it.type.name
             taskDescriptionText.text = it.description
         }
     }
@@ -115,7 +117,7 @@ class DetailFragment : Fragment() {
             val taskTypeText: TextView = it.findViewById(R.id.task_type)
             val taskDescriptionText: TextView = it.findViewById(R.id.task_description)
             currentTask?.let { task ->
-                taskTypeText.text = task.type
+                taskTypeText.text = task.type.name
                 taskDescriptionText.text = task.description
             } ?: run {   // clear the content
                 taskTypeText.text = ""
