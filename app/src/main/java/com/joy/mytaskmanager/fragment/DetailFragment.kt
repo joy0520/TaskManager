@@ -10,7 +10,6 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.activity.OnBackPressedCallback
-import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
@@ -23,10 +22,6 @@ import com.joy.mytaskmanager.model.MainViewModel
 import kotlinx.coroutines.launch
 
 class DetailFragment : Fragment() {
-    companion object {
-        fun newInstance() = DetailFragment()
-    }
-
     private val tag = "DetailFragment-${hashCode()}"
     private val viewModel: MainViewModel by activityViewModels()
     private var currentTask: Task? = null
@@ -101,9 +96,6 @@ class DetailFragment : Fragment() {
     override fun onStop() {
         super.onStop()
         Log.i(tag, "onStop()")
-
-        // hide up button of toolbar
-        (requireActivity() as AppCompatActivity).supportActionBar?.setDisplayHomeAsUpEnabled(false)
     }
 
     fun updateTaskDetail(task: Task) {

@@ -11,7 +11,6 @@ import com.joy.mytaskmanager.R
 import com.joy.mytaskmanager.data.Task
 
 class TaskAdapter(
-    private var values: List<Task>,
     private val onItemClick: (Int) -> Unit  // less couple to the ViewModel
 ) : ListAdapter<Task, TaskAdapter.ViewHolder>(TaskDiffCallback()) {
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
@@ -25,8 +24,9 @@ class TaskAdapter(
                 val position = bindingAdapterPosition
                 Log.i("ViewHolder", "item clicked: $position")
                 if (position != RecyclerView.NO_POSITION) {
-                    val clickedTask = values[position]
-                    onItemClick(clickedTask.id)
+                    getItem(position)?.let { clickedTask ->
+                        onItemClick(clickedTask.id)
+                    }
                 }
             }
         }
@@ -44,10 +44,9 @@ class TaskAdapter(
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        val task = values[position]
-        holder.taskTypeView.text = task.type.name
-        holder.taskDescriptionView.text = task.description
+        getItem(position)?.let { task ->
+            holder.taskTypeView.text = task.type.name
+            holder.taskDescriptionView.text = task.description
+        }
     }
-
-    override fun getItemCount(): Int = values.size
 }

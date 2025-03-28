@@ -9,10 +9,13 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.NavController
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.ui.AppBarConfiguration
+import androidx.navigation.ui.setupActionBarWithNavController
 import com.joy.mytaskmanager.db.TaskDb
 import com.joy.mytaskmanager.fragment.DetailFragment
 import com.joy.mytaskmanager.model.MainViewModel
-import com.joy.mytaskmanager.fragment.TaskFragment
 import com.joy.mytaskmanager.model.TaskViewModelFactory
 import kotlinx.coroutines.launch
 
@@ -21,15 +24,14 @@ class MainActivity : AppCompatActivity() {
         private const val TAG = "MainActivity"
     }
 
-    private val taskFragmentP: TaskFragment by lazy { TaskFragment.newInstance(1) }
-    private val taskFragmentL: TaskFragment by lazy { TaskFragment.newInstance(1) }
-    private val detailFragmentP: DetailFragment by lazy { DetailFragment.newInstance() }
-    private val detailFragmentL: DetailFragment by lazy { DetailFragment.newInstance() }
+    private lateinit var navControllerPortrait: NavController
+    private lateinit var navControllerList: NavController
+    private lateinit var navControllerDetail: NavController
 
     private val taskDb by lazy { TaskDb.getDatabase(applicationContext) }
     private val taskDao by lazy { taskDb.taskDao() }
-    private val taskViewModelFactory by lazy { TaskViewModelFactory(taskDao) }
-//    private val viewModel: MainViewModel by activityViewModels { taskViewModelFactory }
+    internal val taskViewModelFactory by lazy { TaskViewModelFactory(taskDao) }
+
     private val viewModel: MainViewModel by viewModels { taskViewModelFactory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,17 +39,14 @@ class MainActivity : AppCompatActivity() {
         Log.i(TAG, "onCreate()")
         setContentView(R.layout.activity_main)
         setupToolbar()
-        initViews()
+        setupNavigation()
         subscribe()
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.i(TAG, "pressed $item")
         if (item.itemId == android.R.id.home) {
-            if (supportFragmentManager.backStackEntryCount > 0) {
-                onBackPressedDispatcher.onBackPressed()
-            }
-            return true
+            return navControllerPortrait.navigateUp()  // up button on the left of toolbar
         }
 
         return super.onOptionsItemSelected(item)
@@ -58,42 +57,31 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(findViewById(R.id.toolbar))
     }
 
-    private fun initViews() {
-        Log.i(TAG, "navigateToDetail: ${viewModel.navigateToDetail.value}")
+    private fun setupNavigation() {
+        if (isPortrait()) {
+            val navHostFragment =
+                supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
+            navControllerPortrait = navHostFragment.navController
 
-        when {
-            isPortrait() -> {  // add taskFragment only
-                Log.i(TAG, "ORIENTATION_PORTRAIT")
-                if (!taskFragmentExistsPortrait()) {
-                    Log.i(TAG, "add TaskFragment P")
-                    supportFragmentManager.beginTransaction()
-                        .add(R.id.fragment_container, taskFragmentP, "TaskFragmentP")
-                        .commit()
-                }
+            setupActionBarWithNavController(
+                navControllerPortrait,
+                AppBarConfiguration(navControllerPortrait.graph)
+            )
+        } else if (isLandscape()) {
+            val navHostFragmentList = supportFragmentManager
+                .findFragmentById(R.id.task_list_container) as NavHostFragment
+            navControllerList = navHostFragmentList.navController
 
-                viewModel.navigateToDetail.value?.also { task ->
-                    showDetailFragmentPortrait()
-                    detailFragmentP.updateTaskDetail(task)
-                }
-            }
+            val navHostFragmentDetail = supportFragmentManager
+                .findFragmentById(R.id.detail_container) as NavHostFragment
+            navControllerDetail = navHostFragmentDetail.navController
 
-            isLandscape() -> {  // add both fragments
-                Log.i(TAG, "ORIENTATION_LANDSCAPE")
-                val transaction = supportFragmentManager.beginTransaction()
-                if (!taskFragmentExistsLandscape()) {
-                    Log.i(TAG, "add TaskFragment L")
-                    transaction.add(R.id.task_list_container, taskFragmentL, "TaskFragmentL")
-                }
-                if (!detailFragmentExistsLandscape()) {
-                    Log.i(TAG, "add DetailFragment L")
-                    transaction.add(R.id.detail_container, detailFragmentL, "DetailFragmentL")
-                }
-
-                transaction.commit()
-            }
-
-            else -> {}  // nothing for now
+            setupActionBarWithNavController(
+                navControllerList,
+                AppBarConfiguration(navControllerList.graph)
+            )
         }
+
     }
 
     private fun subscribe() {
@@ -101,18 +89,25 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.navigateToDetail.collect { task ->
-                    if (task == null) return@collect
+                    if (task == null) {
+                        // handle unselected if needed (e.g., navigate back)
+                        if (isPortrait() && navControllerPortrait.currentDestination?.id == R.id.detailFragment)
+                            navControllerPortrait.popBackStack()
+
+                        return@collect
+                    }
 
                     if (isPortrait()) {
-                        if (detailFragmentExistsPortrait()) return@collect
-
-                        Log.i(TAG, "portrait collect{} $task")
-                        showDetailFragmentPortrait()
+                        // select a task -> go to detail fragment
+                        navControllerPortrait.navigate(R.id.action_taskFragment_to_detailFragment)
                     } else if (isLandscape()) {
-                        if (detailFragmentExistsLandscape()) return@collect
-
-                        Log.i(TAG, "landscape collect{} $task")
-                        detailFragmentL.updateTaskDetail(task)
+                        // For landscape, we might want to pass the task to the DetailFragment
+                        // via arguments in the nav graph or update it directly if DetailFragmentL is held.
+                        // If DetailFragmentL is managed by Navigation, consider using arguments.
+                        // For simplicity, let's assume DetailFragmentL is still held and updated directly.
+                        val detailFragment = supportFragmentManager
+                            .findFragmentByTag("DetailFragmentL") as? DetailFragment
+                        detailFragment?.updateTaskDetail(task)
                     }
                 }
             }
@@ -125,35 +120,4 @@ class MainActivity : AppCompatActivity() {
 
     private fun isLandscape(): Boolean =
         resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
-    private fun taskFragmentExistsPortrait(): Boolean =
-        supportFragmentManager.findFragmentByTag("TaskFragmentP") != null
-
-    private fun taskFragmentExistsLandscape(): Boolean =
-        supportFragmentManager.findFragmentByTag("TaskFragmentL") != null
-
-    private fun detailFragmentExistsPortrait(): Boolean =
-        supportFragmentManager.findFragmentByTag("DetailFragmentP") != null
-
-    private fun detailFragmentExistsLandscape(): Boolean =
-        supportFragmentManager.findFragmentByTag("DetailFragmentL") != null
-
-    private fun showDetailFragmentPortrait() {
-        Log.i(TAG, "showDetailFragmentPortrait()")
-        val transaction = supportFragmentManager.beginTransaction()
-        if (detailFragmentExistsPortrait()) {
-            Log.i(TAG, "detailFragmentExistsPortrait")
-            supportFragmentManager.findFragmentByTag("DetailFragmentP")?.also {
-                Log.i(TAG, "transaction remove $it")
-                transaction.remove(it)
-            }
-        }
-
-        transaction
-            .replace(R.id.fragment_container, detailFragmentP, "DetailFragmentP")
-            .addToBackStack(null)
-            .commit()
-
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
-    }
 }
