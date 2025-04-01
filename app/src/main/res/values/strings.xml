@@ -3,4 +3,17 @@
     <string name="title">MyTaskManager</string>
     <string name="menu_title_edit">Edit Task</string>
     <string name="menu_title_cancel">Cancel Task</string>
+
+    <!-- Fragment title -->
+    <string name="tasks_fragment_title">Tasks</string>
+    <string name="detail_fragment_title">Detail</string>
+    <string name="editor_fragment_title">Edit</string>
+    <string name="add_fragment_title">New Task</string>
+
+    <!-- Button -->
+    <string name="button_save">Save</string>
+    <string name="button_cancel">Cancel</string>
+
+    <!-- hints -->
+    <string name="hint_edit_description">Task description.</string>
 </resources>

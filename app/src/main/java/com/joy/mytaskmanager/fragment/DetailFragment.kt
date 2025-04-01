@@ -1,5 +1,6 @@
 package com.joy.mytaskmanager.fragment
 
+import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -16,6 +17,7 @@ import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import androidx.navigation.fragment.findNavController
 import com.joy.mytaskmanager.R
 import com.joy.mytaskmanager.data.Task
 import com.joy.mytaskmanager.model.MainViewModel
@@ -35,6 +37,9 @@ class DetailFragment : Fragment() {
             return when (menuItem.itemId) {
                 R.id.action_edit -> {
                     Log.i(tag, "action_edit")
+                    if (isPortrait()) findNavController().navigate(R.id.action_detailFragment_to_editTaskFragment)
+                    else if (isLandscape()) findNavController().navigate(R.id.action_detailFragmentL_to_editTaskFragmentL)
+
                     true
                 }
 
@@ -57,7 +62,7 @@ class DetailFragment : Fragment() {
 
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.navigateToDetail.collect { task ->
+                viewModel.selectedTask.collect { task ->
                     task?.also { updateTaskDetail(it) }
                 }
             }
@@ -85,8 +90,8 @@ class DetailFragment : Fragment() {
         // set texts
         val taskTypeText: TextView = view.findViewById(R.id.task_type)
         val taskDescriptionText: TextView = view.findViewById(R.id.task_description)
-        viewModel.navigateToDetail.value.also {
-            Log.i(tag, "navigateToDetail.value=$it")
+        viewModel.selectedTask.value.also {
+            Log.i(tag, "selectedTask.value: $it")
         }?.also {
             taskTypeText.text = it.type.name
             taskDescriptionText.text = it.description
@@ -117,4 +122,10 @@ class DetailFragment : Fragment() {
             }
         }
     }
+
+    private fun isPortrait(): Boolean =
+        resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+    private fun isLandscape(): Boolean =
+        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 }

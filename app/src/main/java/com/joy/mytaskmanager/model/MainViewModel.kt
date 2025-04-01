@@ -27,22 +27,28 @@ class TaskViewModelFactory(private val taskDao: TaskDao) : ViewModelProvider.Fac
 class MainViewModel(private val taskDao: TaskDao) : ViewModel() {
     val tasks: LiveData<List<Task>> = taskDao.allTasks()
 
-    private val _navigateToDetail = MutableStateFlow<Task?>(null)
-    val navigateToDetail: StateFlow<Task?> = _navigateToDetail.asStateFlow()
+    private val _selectedTask = MutableStateFlow<Task?>(null)
+    val selectedTask: StateFlow<Task?> = _selectedTask.asStateFlow()
 
     fun selectTask(taskId: Int) {
         Log.i("MainViewModel", "selectTask() $taskId")
         viewModelScope.launch {
-            _navigateToDetail.emit(tasks.value?.find { it.id == taskId })
+            _selectedTask.emit(tasks.value?.find { it.id == taskId })
         }
     }
 
     fun unselectCurrentTask() {
         Log.i("MainViewModel", "unselectCurrentTask()")
         viewModelScope.launch {
-            _navigateToDetail.emit(null)
+            _selectedTask.emit(null)
         }
     }
 
-    // TODO: update and delete a task
+    fun updateTask(task: Task) {
+        Log.i("MainViewModel", "updateTask(): $task")
+        viewModelScope.launch {
+            taskDao.update(task)
+            _selectedTask.emit(taskDao.task(task.id))
+        }
+    }
 }

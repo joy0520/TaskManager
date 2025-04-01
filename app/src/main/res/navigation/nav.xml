@@ -2,14 +2,14 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main_navigation.xml"
+    android:id="@+id/nav"
     app:startDestination="@id/taskFragment">
 
     <fragment
         android:id="@+id/taskFragment"
         android:name="com.joy.mytaskmanager.fragment.TaskFragment"
-        android:label="task_fragment"
-        tools:layout="@layout/task_fragment" >
+        android:label="@string/tasks_fragment_title"
+        tools:layout="@layout/task_fragment">
         <action
             android:id="@+id/action_taskFragment_to_detailFragment"
             app:destination="@id/detailFragment" />
@@ -17,6 +17,15 @@
     <fragment
         android:id="@+id/detailFragment"
         android:name="com.joy.mytaskmanager.fragment.DetailFragment"
-        android:label="detail_fragment"
-        tools:layout="@layout/detail_fragment" />
+        android:label="@string/detail_fragment_title"
+        tools:layout="@layout/detail_fragment">
+        <action
+            android:id="@+id/action_detailFragment_to_editTaskFragment"
+            app:destination="@id/editTaskFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/editTaskFragment"
+        android:name="com.joy.mytaskmanager.fragment.EditTaskFragment"
+        android:label="@string/editor_fragment_title"
+        tools:layout="@layout/edit_task_fragment" />
 </navigation>

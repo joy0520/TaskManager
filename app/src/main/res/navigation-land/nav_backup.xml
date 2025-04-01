@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav"
+    app:startDestination="@id/detailFragmentL">
+
+    <fragment
+        android:id="@+id/taskFragmentL"
+        android:name="com.joy.mytaskmanager.fragment.TaskFragment"
+        android:label="@string/tasks_fragment_title"
+        tools:layout="@layout/task_fragment" />
+    <fragment
+        android:id="@+id/detailFragmentL"
+        android:name="com.joy.mytaskmanager.fragment.DetailFragment"
+        android:label="@string/detail_fragment_title"
+        tools:layout="@layout/detail_fragment">
+        <action
+            android:id="@+id/action_detailFragmentL_to_editTaskFragmentL"
+            app:destination="@id/editTaskFragmentL" />
+    </fragment>
+    <fragment
+        android:id="@+id/editTaskFragmentL"
+        android:name="com.joy.mytaskmanager.fragment.EditTaskFragment"
+        android:label="@string/editor_fragment_title"
+        tools:layout="@layout/edit_task_fragment" />
+</navigation>
