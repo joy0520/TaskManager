@@ -37,8 +37,10 @@ class DetailFragment : Fragment() {
             return when (menuItem.itemId) {
                 R.id.action_edit -> {
                     Log.i(tag, "action_edit")
-                    if (isPortrait()) findNavController().navigate(R.id.action_detailFragment_to_editTaskFragment)
-                    else if (isLandscape()) findNavController().navigate(R.id.action_detailFragmentL_to_editTaskFragmentL)
+                    if (isPortrait())
+                        findNavController().navigate(R.id.action_detailFragment_to_editTaskFragment)
+                    else if (isLandscape())
+                        findNavController().navigate(R.id.action_detailFragment_to_editTaskFragment)
 
                     true
                 }
