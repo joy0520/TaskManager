@@ -62,10 +62,11 @@ class DetailFragment : Fragment() {
     ): View? {
         Log.i(tag, "onCreateView()")
 
+        // observe viewModel.selectedTask
         viewLifecycleOwner.lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
-                viewModel.selectedTask.collect { task ->
-                    task?.also { updateTaskDetail(it) }
+                viewModel.selectedTask.collect { task ->  // task could be null
+                    updateTaskDetail(task)  // updateTaskDetail() can handle null task
                 }
             }
         }
@@ -76,36 +77,22 @@ class DetailFragment : Fragment() {
             object : OnBackPressedCallback(true) {
                 override fun handleOnBackPressed() {
                     Log.i(tag, "handleOnBackPressed()")
-                    viewModel.unselectCurrentTask()
-                    parentFragmentManager.popBackStack()
+
+                    if (viewModel.selectedTask.value != null) {
+                        Log.i(tag, "viewModel.unselectCurrentTask() + popBackStack()")
+                        viewModel.unselectCurrentTask()
+                        // UI would observe null and become blank
+                    } else {
+                        // finish the app when selectedTask is null at landscape
+                        requireActivity().finish()
+                    }
                 }
             })
 
         return inflater.inflate(R.layout.detail_fragment, container, false)
     }
 
-    // after onCreateView()
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        Log.i(tag, "onViewCreated()")
-
-        // set texts
-        val taskTypeText: TextView = view.findViewById(R.id.task_type)
-        val taskDescriptionText: TextView = view.findViewById(R.id.task_description)
-        viewModel.selectedTask.value.also {
-            Log.i(tag, "selectedTask.value: $it")
-        }?.also {
-            taskTypeText.text = it.type.name
-            taskDescriptionText.text = it.description
-        }
-    }
-
-    override fun onStop() {
-        super.onStop()
-        Log.i(tag, "onStop()")
-    }
-
-    fun updateTaskDetail(task: Task) {
+    private fun updateTaskDetail(task: Task?) {
         Log.i(tag, "updateTaskDetail() $task")
         currentTask = task
         updateUiWithTask()

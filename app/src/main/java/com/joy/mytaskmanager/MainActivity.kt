@@ -18,7 +18,6 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.joy.mytaskmanager.db.TaskDb
-import com.joy.mytaskmanager.fragment.DetailFragment
 import com.joy.mytaskmanager.fragment.TaskFragment
 import com.joy.mytaskmanager.model.MainViewModel
 import com.joy.mytaskmanager.model.TaskViewModelFactory
@@ -52,16 +51,29 @@ class MainActivity : AppCompatActivity() {
         subscribe()
     }
 
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        Log.i(TAG, "pressed $item")
-        if (item.itemId == android.R.id.home) {
-            return navController.navigateUp()  // up button on the left of toolbar
+    override fun onSupportNavigateUp(): Boolean {
+        if (!::navController.isInitialized) return super.onSupportNavigateUp()
+        if (!::appBarConfiguration.isInitialized)
+            return navController.navigateUp() || super.onSupportNavigateUp()
+
+        if (isLandscape()) {
+            Log.i(TAG, "onSupportNavigateUp() isLandscape")
+            val currentDestinationId = navController.currentDestination?.id
+            return if (currentDestinationId == R.id.detailFragment) {
+                Log.i(TAG, "currentDestinationId == detailFragment, selectedTask=${viewModel.selectedTask.value}")
+                if (viewModel.selectedTask.value != null) {
+                    viewModel.unselectCurrentTask()
+                    true
+                } else {  // null task -> finish the app
+                    finish()
+                    true
+                }
+            } else {
+                Log.i(TAG, "currentDestinationId != detailFragment")
+                navController.navigateUp() || super.onSupportNavigateUp()
+            }
         }
 
-        return super.onOptionsItemSelected(item)
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
         // let NavController handle up navigation
         return navController.navigateUp() || super.onSupportNavigateUp()
     }
@@ -135,24 +147,18 @@ class MainActivity : AppCompatActivity() {
      */
     private fun navigateToInitialDetailPaneIfNeeded(savedInstanceState: Bundle?) {
         if (isLandscape() && savedInstanceState == null) {
-            // Check if NavController is initialized AND current destination is the list fragment
-            if (::navController.isInitialized && navController.currentDestination?.id == R.id.taskFragment) {
-                Log.i(
-                    TAG,
-                    "Landscape initial load: Detail pane needs navigation from TaskFragment start destination."
-                )
-                try {
-                    navController.navigate(R.id.action_taskFragment_to_detailFragment)
-                    Log.d(TAG, "Navigated detail pane to initial DetailFragment state.")
-                } catch (e: IllegalStateException) {
-                    Log.e(
-                        TAG,
-                        "Safe Args NavDirections not found. Ensure graph and actions are correct.",
-                        e
-                    )
-                } catch (e: IllegalArgumentException) {
-                    Log.e(TAG, "Navigation failed, likely destination not found from current.", e)
-                }
+            if (!::navController.isInitialized) return
+
+            if (navController.graph.nodes.isEmpty ||
+                navController.currentDestination?.id != R.id.taskFragment
+            ) return
+
+            // navigate from TaskFragment to DetailFragment
+            try {
+                Log.i(TAG, "navigateToInitialDetailPaneIfNeeded() task->detail")
+                navController.navigate(R.id.action_taskFragment_to_detailFragment)
+            } catch (e: Exception) {
+                Log.e(TAG, "Initial landscape navigation failed: $e")
             }
         }
     }
@@ -205,45 +211,19 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-//    private fun setupNavigation(savedInstanceState: Bundle?) {
-//        if (isPortrait()) {
-//            val navHostFragment =
-//                supportFragmentManager.findFragmentById(R.id.fragment_container) as NavHostFragment
-//            navController = navHostFragment.navController
-//
-//            setupActionBarWithNavController(
-//                navController,
-//                AppBarConfiguration(navController.graph)
-//            )
-//        } else if (isLandscape()) {
-//            // landscape + first time Activity onCreate -> add TaskFragment
-//            supportFragmentManager.commit {
-//                add(R.id.task_list_container, TaskFragment::class.java, null)
-//            }
-//
-//            val navHostFragmentDetail = supportFragmentManager
-//                .findFragmentById(R.id.detail_container) as NavHostFragment
-//            navController = navHostFragmentDetail.navController
-//
-//            setupActionBarWithNavController(
-//                navController,
-//                AppBarConfiguration(navController.graph)
-//            )
-//        }
-//
-//    }
-
     private fun subscribe() {
-        // observe MainViewModel.navigationToDetail and execute FragmentTransaction
+        // observe MainViewModel.selectedTask and execute FragmentTransaction
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.selectedTask.collect { task ->
-                    if (!isLandscape()) return@collect
+                    if (!isLandscape() || !::navController.isInitialized) return@collect
+                    // observation in DetailFragment handles null task
                     if (task == null) return@collect
 
-                    val detailFragment = supportFragmentManager
-                        .findFragmentByTag("DetailFragmentL") as? DetailFragment
-                    detailFragment?.updateTaskDetail(task)
+                    // check if we should navigate to DetailFragment
+                    val currentDestinationId = navController.currentDestination?.id
+                    if (currentDestinationId == R.id.taskFragment)
+                        navigateToDetail()
                 }
             }
         }
@@ -257,4 +237,14 @@ class MainActivity : AppCompatActivity() {
     private fun isLandscape(newConfig: Configuration? = null): Boolean =
         (newConfig?.orientation ?: resources.configuration.orientation) ==
                 Configuration.ORIENTATION_LANDSCAPE
+
+    private fun navigateToDetail() {
+        if (!::navController.isInitialized || !isLandscape()) return
+
+        try {
+            navController.navigate(R.id.detailFragment)
+        } catch (e: Exception) {
+            Log.e(TAG, "Failed to navigate to DetailFragment: $e")
+        }
+    }
 }
