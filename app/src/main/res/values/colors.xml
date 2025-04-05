@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="main_activity_background">#00b2ca</color>
-    <color name="task_fragment_background">#f79256</color>
-    <color name="detail_fragment_background">#fbd1a2</color>
-    <color name="edit_fragment_background">#7dcfb6</color>
+    <color name="main_activity_background">#7E2E84</color>
+    <color name="task_fragment_background">#D14081</color>
+    <color name="detail_fragment_background">#EF798A</color>
+    <color name="edit_fragment_background">#F9F5E3</color>
+    <color name="add_fragment_background">#AACCF5AC</color>
 </resources>

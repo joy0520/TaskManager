@@ -51,4 +51,11 @@ class MainViewModel(private val taskDao: TaskDao) : ViewModel() {
             _selectedTask.emit(taskDao.task(task.id))
         }
     }
+
+    fun addTask(newTask: Task) {
+        Log.i("MainViewModel", "addTask(): $newTask")
+        viewModelScope.launch {
+            taskDao.insert(newTask)
+        }
+    }
 }

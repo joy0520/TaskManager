@@ -3,6 +3,7 @@
     <string name="title">MyTaskManager</string>
     <string name="menu_title_edit">Edit Task</string>
     <string name="menu_title_cancel">Cancel Task</string>
+    <string name="menu_title_add">Add Task</string>
 
     <!-- Fragment title -->
     <string name="tasks_fragment_title">Tasks</string>

@@ -3,6 +3,7 @@ package com.joy.mytaskmanager
 import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
+import android.view.Menu
 import android.view.MenuItem
 import android.view.View
 import androidx.activity.viewModels
@@ -18,6 +19,7 @@ import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.joy.mytaskmanager.db.TaskDb
+import com.joy.mytaskmanager.fragment.AddTaskDialogFragment
 import com.joy.mytaskmanager.fragment.TaskFragment
 import com.joy.mytaskmanager.model.MainViewModel
 import com.joy.mytaskmanager.model.TaskViewModelFactory
@@ -51,6 +53,37 @@ class MainActivity : AppCompatActivity() {
         subscribe()
     }
 
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.menu_detail, menu)
+
+        return true  // menu should be displayed
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        Log.i(TAG, "onOptionsItemSelected() $item clicked")
+        return when (item.itemId) {
+            R.id.action_add -> {
+                AddTaskDialogFragment().show(supportFragmentManager, "AddTaskDialogFragment")
+                true
+            }
+
+            R.id.action_edit -> {
+                val currentDestId = navController.currentDestination?.id
+                if (currentDestId == R.id.detailFragment)
+                    navController.navigate(R.id.action_detailFragment_to_editTaskFragment)
+
+                true
+            }
+
+            R.id.button_cancel -> {
+                // TODO: delete selected task
+                true
+            }
+
+            else -> super.onOptionsItemSelected(item)  // android.R.id.home = up button -> onSupportNavigateUp()
+        }
+    }
+
     override fun onSupportNavigateUp(): Boolean {
         if (!::navController.isInitialized) return super.onSupportNavigateUp()
         if (!::appBarConfiguration.isInitialized)
@@ -60,7 +93,6 @@ class MainActivity : AppCompatActivity() {
             Log.i(TAG, "onSupportNavigateUp() isLandscape")
             val currentDestinationId = navController.currentDestination?.id
             return if (currentDestinationId == R.id.detailFragment) {
-                Log.i(TAG, "currentDestinationId == detailFragment, selectedTask=${viewModel.selectedTask.value}")
                 if (viewModel.selectedTask.value != null) {
                     viewModel.unselectCurrentTask()
                     true
@@ -69,7 +101,6 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
             } else {
-                Log.i(TAG, "currentDestinationId != detailFragment")
                 navController.navigateUp() || super.onSupportNavigateUp()
             }
         }
