@@ -9,6 +9,7 @@ import android.widget.ArrayAdapter
 import android.widget.Button
 import android.widget.EditText
 import android.widget.Spinner
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.activityViewModels
@@ -49,6 +50,9 @@ class AddTaskDialogFragment : DialogFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+
+        view.findViewById<TextView>(R.id.dialog_title)?.text =
+            getString(R.string.add_fragment_title)
 
         spinnerType = view.findViewById(R.id.spinner_type)
         editDescription = view.findViewById(R.id.edit_description)

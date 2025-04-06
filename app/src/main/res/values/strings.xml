@@ -10,6 +10,7 @@
     <string name="detail_fragment_title">Detail</string>
     <string name="editor_fragment_title">Edit</string>
     <string name="add_fragment_title">New Task</string>
+    <string name="delete_fragment_title">Delete Task</string>
 
     <!-- Button -->
     <string name="button_save">Save</string>

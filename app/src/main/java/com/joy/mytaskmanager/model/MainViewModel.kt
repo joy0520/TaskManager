@@ -58,4 +58,11 @@ class MainViewModel(private val taskDao: TaskDao) : ViewModel() {
             taskDao.insert(newTask)
         }
     }
+
+    fun deleteTask(taskId: Int) {
+        Log.i("MainViewModel", "deleteTask(): ID=$taskId")
+        viewModelScope.launch {
+            taskDao.delete(taskId)
+        }
+    }
 }

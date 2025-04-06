@@ -21,6 +21,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.joy.mytaskmanager.db.TaskDb
 import com.joy.mytaskmanager.fragment.AddTaskDialogFragment
+import com.joy.mytaskmanager.fragment.DeleteTaskDialogFragment
 import com.joy.mytaskmanager.fragment.TaskFragment
 import com.joy.mytaskmanager.model.MainViewModel
 import com.joy.mytaskmanager.model.TaskViewModelFactory
@@ -112,8 +113,8 @@ class MainActivity : AppCompatActivity() {
                 true
             }
 
-            R.id.button_cancel -> {
-                // TODO: delete selected task
+            R.id.action_delete -> {
+                DeleteTaskDialogFragment().show(supportFragmentManager, "DeleteTaskDialogFragment")
                 true
             }
 
