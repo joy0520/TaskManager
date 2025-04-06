@@ -46,9 +46,10 @@ class DeleteTaskDialogFragment : DialogFragment() {
             val taskDescriptionText: TextView = view.findViewById(R.id.task_description)
             taskDescriptionText.text = it.description
 
-            val saveButton = view.findViewById<Button>(R.id.button_save)
+            val saveButton = view.findViewById<Button>(R.id.button_delete)
             saveButton.setOnClickListener { _ ->
                 viewModel.deleteTask(it.id)
+                viewModel.unselectCurrentTask()
                 Toast.makeText(
                     requireContext(),
                     "Task ${it.type.name} Deleted",

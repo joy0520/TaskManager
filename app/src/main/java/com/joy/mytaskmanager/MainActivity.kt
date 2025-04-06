@@ -318,18 +318,28 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launch {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.selectedTask.collect { task ->
-                    if (!isLandscape() || !::navController.isInitialized) return@collect
+                    if (!::navController.isInitialized) return@collect
 
-                    // toolbar title should change with selectedTask changes
-                    navController.currentDestination?.also { updateToolbarTitle(it) }
+                    val curDest = navController.currentDestination
+                    if (isLandscape()) {
+                        // toolbar title should change with selectedTask changes
+                        curDest?.also { updateToolbarTitle(it) }
 
-                    // observation in DetailFragment handles null task
-                    if (task == null) return@collect
+                        // leave empty DetailFragment alone
+                        if (task == null) {
+                            return@collect
+                        }
 
-                    // check if we should navigate to DetailFragment
-                    val currentDestinationId = navController.currentDestination?.id
-                    if (currentDestinationId == R.id.taskFragment)
-                        navigateToDetail()
+                        // check if we should navigate to DetailFragment
+                        val currentDestinationId = curDest?.id
+                        if (currentDestinationId == R.id.taskFragment)
+                            navigateToDetail()
+                    } else if (isPortrait()) {
+                        if (task == null && curDest?.id == R.id.detailFragment) {
+                            // leave DetailFragment
+                            navController.navigateUp()
+                        }
+                    }
                 }
             }
         }
