@@ -15,6 +15,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavController
+import androidx.navigation.NavDestination
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.setupActionBarWithNavController
@@ -197,11 +198,33 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupDestinationChangedListener() {
+        // called when destination changed
         navController.addOnDestinationChangedListener { _, destination, _ ->
             Log.i(TAG, "Navigate to destination $destination ID=${destination.id}")
             // let system know it should prepare a new options menu
             invalidateOptionsMenu()
+            updateToolbarTitle(destination)
         }
+    }
+
+    private fun updateToolbarTitle(destination: NavDestination) {
+        val actionBar = supportActionBar ?: return
+
+        if (isLandscape()) {
+            when (destination.id) {
+                R.id.detailFragment -> {
+                    // set title according to viewModel.selectedTask
+                    findViewById<View>(android.R.id.content).post {
+                        if (viewModel.selectedTask.value == null) {
+                            actionBar.title = getString(R.string.tasks_fragment_title)
+                        } else {
+                            actionBar.title = getString(R.string.detail_fragment_title)
+                        }
+                    }
+                }
+            }
+        }
+        // in portrait, let the destination fragment set the title
     }
 
     /**
@@ -295,6 +318,10 @@ class MainActivity : AppCompatActivity() {
             repeatOnLifecycle(Lifecycle.State.STARTED) {
                 viewModel.selectedTask.collect { task ->
                     if (!isLandscape() || !::navController.isInitialized) return@collect
+
+                    // toolbar title should change with selectedTask changes
+                    navController.currentDestination?.also { updateToolbarTitle(it) }
+
                     // observation in DetailFragment handles null task
                     if (task == null) return@collect
 
