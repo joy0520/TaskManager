@@ -59,6 +59,42 @@ class MainActivity : AppCompatActivity() {
         return true  // menu should be displayed
     }
 
+    override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
+        // adjust visibility of menu items
+        val parentResult = super.onPrepareOptionsMenu(menu)
+        val itemAdd = menu?.findItem(R.id.action_add)
+        val itemEdit = menu?.findItem(R.id.action_edit)
+        val itemDelete = menu?.findItem(R.id.action_delete)
+
+        if (!::navController.isInitialized) {
+            itemEdit?.isVisible = false
+            itemDelete?.isVisible = false
+            return parentResult
+        }
+
+        when (navController.currentDestination?.id) {
+            R.id.detailFragment -> {
+                itemAdd?.isVisible = true
+                itemEdit?.isVisible = true
+                itemDelete?.isVisible = true
+            }
+
+            R.id.editTaskFragment -> {
+                itemAdd?.isVisible = false
+                itemEdit?.isVisible = false
+                itemDelete?.isVisible = false
+            }
+
+            else -> {
+                itemAdd?.isVisible = true
+                itemEdit?.isVisible = false
+                itemDelete?.isVisible = false
+            }
+        }
+
+        return parentResult
+    }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         Log.i(TAG, "onOptionsItemSelected() $item clicked")
         return when (item.itemId) {
@@ -143,6 +179,9 @@ class MainActivity : AppCompatActivity() {
                     // NavController is ready, store it
                     navController = f.navController
 
+                    // setup listener after navController is initialized
+                    setupDestinationChangedListener()
+
                     // Now setup ActionBar
                     setupToolbarWithNavController()
 
@@ -155,6 +194,14 @@ class MainActivity : AppCompatActivity() {
                 }
             }
         }, false) // 'false' means recursive scan is off, which is usually fine here.
+    }
+
+    private fun setupDestinationChangedListener() {
+        navController.addOnDestinationChangedListener { _, destination, _ ->
+            Log.i(TAG, "Navigate to destination $destination ID=${destination.id}")
+            // let system know it should prepare a new options menu
+            invalidateOptionsMenu()
+        }
     }
 
     /**

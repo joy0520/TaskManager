@@ -2,7 +2,7 @@
     <string name="app_name">MyTaskManager</string>
     <string name="title">MyTaskManager</string>
     <string name="menu_title_edit">Edit Task</string>
-    <string name="menu_title_cancel">Cancel Task</string>
+    <string name="menu_title_delete">Delete Task</string>
     <string name="menu_title_add">Add Task</string>
 
     <!-- Fragment title -->

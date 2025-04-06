@@ -15,9 +15,9 @@
 
     <!-- Shows when the DetailFragment is shown and a task is selected. -->
     <item
-        android:id="@+id/action_cancel"
+        android:id="@+id/action_delete"
         android:icon="@android:drawable/ic_menu_close_clear_cancel"
-        android:title="@string/menu_title_cancel"
+        android:title="@string/menu_title_delete"
         app:showAsAction="ifRoom" />
 
 </menu>
