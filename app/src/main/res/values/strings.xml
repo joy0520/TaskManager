@@ -4,6 +4,8 @@
     <string name="menu_title_edit">Edit Task</string>
     <string name="menu_title_delete">Delete Task</string>
     <string name="menu_title_add">Add Task</string>
+    <string name="start">Start</string>
+    <string name="end">End</string>
 
     <!-- Fragment title -->
     <string name="tasks_fragment_title">Tasks</string>
@@ -12,6 +14,10 @@
     <string name="add_fragment_title">New Task</string>
     <string name="delete_fragment_title">Delete Task</string>
 
+    <!-- Dialog title -->
+    <string name="select_date">Select Date</string>
+    <string name="select_time">Select Time</string>
+
     <!-- Button -->
     <string name="button_save">Save</string>
     <string name="button_delete">Delete</string>
@@ -19,4 +25,14 @@
 
     <!-- hints -->
     <string name="hint_edit_description">Task description.</string>
+    <string name="hint_select_date_time">Select date and time</string>
+
+    <!-- description -->
+    <string name="start_date_time_button_description">Setup start date and time.</string>
+    <string name="end_date_time_button_description">Setup end date and time.</string>
+
+    <!-- Toast -->
+    <string name="toast_pick_start_and_end">Pick Start &amp; End</string>
+    <string name="toast_pick_start">Pick Start</string>
+    <string name="toast_pick_end">Pick End</string>
 </resources>
