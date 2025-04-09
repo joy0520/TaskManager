@@ -163,7 +163,7 @@ class AddTaskDialogFragment : DialogFragment() {
     }
 
     private fun isValidDateTime(): Boolean {
-        val toastText = when {
+        when {
             selectedStartDateTime == null && selectedEndDateTime == null -> R.string.toast_pick_start_and_end
             selectedStartDateTime == null -> R.string.toast_pick_start
             selectedEndDateTime == null -> R.string.toast_pick_end

@@ -5,12 +5,13 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/edit_fragment_background"
+    android:padding="12dp"
     tools:context=".fragment.EditTaskFragment">
 
     <Spinner
         android:id="@+id/spinner_type"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="40dp"
         android:gravity="center"
         app:layout_constraintBottom_toTopOf="@id/edit_description"
         app:layout_constraintEnd_toEndOf="parent"
@@ -32,14 +33,81 @@
         app:layout_constraintTop_toBottomOf="@id/spinner_type"
         app:layout_constraintVertical_chainStyle="packed" />
 
-    <androidx.constraintlayout.widget.Barrier
-        android:id="@+id/editors_bottom_barrier"
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_marginTop="4dp"
-        android:layout_marginBottom="4dp"
-        app:constraint_referenced_ids="edit_description"
+    <TextView
+        android:id="@+id/start"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/start"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/edit_description" />
+
+    <TextView
+        android:id="@+id/start_date_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/start_bottom_barrier"
+        app:layout_constraintEnd_toStartOf="@id/start_date_time_picker_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start" />
+
+    <ImageButton
+        android:id="@+id/start_date_time_picker_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/edit_fragment_background"
+        android:contentDescription="@string/start_date_time_button_description"
+        android:src="@android:drawable/ic_menu_my_calendar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/start_date_time"
+        app:layout_constraintTop_toBottomOf="@id/start" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/start_bottom_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="start_date_time, start_date_time_picker_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <TextView
+        android:id="@+id/end"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/end"
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_bottom_barrier" />
+
+    <TextView
+        android:id="@+id/end_date_time"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintBottom_toTopOf="@id/end_bottom_barrier"
+        app:layout_constraintEnd_toStartOf="@id/end_date_time_picker_button"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/end" />
+
+    <ImageButton
+        android:id="@+id/end_date_time_picker_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/edit_fragment_background"
+        android:contentDescription="@string/end_date_time_button_description"
+        android:src="@android:drawable/ic_menu_my_calendar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@id/end_date_time"
+        app:layout_constraintTop_toBottomOf="@id/end" />
+
+    <androidx.constraintlayout.widget.Barrier
+        android:id="@+id/end_bottom_barrier"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        app:barrierDirection="bottom"
+        app:constraint_referenced_ids="end_date_time, end_date_time_picker_button"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/button_save"
@@ -50,8 +118,7 @@
         app:layout_constraintEnd_toStartOf="@id/button_cancel"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/editors_bottom_barrier" />
+        app:layout_constraintStart_toStartOf="parent" />
 
     <Button
         android:id="@+id/button_cancel"
@@ -62,7 +129,6 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:layout_constraintHorizontal_weight="1"
-        app:layout_constraintStart_toEndOf="@id/button_save"
-        app:layout_constraintTop_toBottomOf="@id/editors_bottom_barrier" />
+        app:layout_constraintStart_toEndOf="@id/button_save" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
