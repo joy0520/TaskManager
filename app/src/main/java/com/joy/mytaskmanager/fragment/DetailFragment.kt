@@ -16,6 +16,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.joy.mytaskmanager.R
 import com.joy.mytaskmanager.data.Task
 import com.joy.mytaskmanager.model.MainViewModel
+import com.joy.mytaskmanager.util.toDt
 import kotlinx.coroutines.launch
 
 class DetailFragment : Fragment() {
@@ -69,12 +70,19 @@ class DetailFragment : Fragment() {
         view?.let {
             val taskTypeText: TextView = it.findViewById(R.id.task_type)
             val taskDescriptionText: TextView = it.findViewById(R.id.task_description)
+            val startDateTime: TextView = it.findViewById(R.id.start_date_time)
+            val endDateTime: TextView = it.findViewById(R.id.end_date_time)
+
             currentTask?.let { task ->
                 taskTypeText.text = task.type.name
                 taskDescriptionText.text = task.description
+                startDateTime.text = task.start.toDt()
+                endDateTime.text = task.end.toDt()
             } ?: run {   // clear the content
                 taskTypeText.text = ""
                 taskDescriptionText.text = ""
+                startDateTime.text = ""
+                endDateTime.text = ""
             }
         }
     }
