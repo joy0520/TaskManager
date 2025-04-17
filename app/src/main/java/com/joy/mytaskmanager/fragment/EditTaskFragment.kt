@@ -59,6 +59,9 @@ class EditTaskFragment : Fragment() {
 
         // setup widgets
         viewModel.selectedTask.value?.also { task ->
+            selectedStartDateTime = task.start
+            selectedEndDateTime = task.end
+
             val adapter = ArrayAdapter(
                 requireContext(),
                 android.R.layout.simple_spinner_dropdown_item,
