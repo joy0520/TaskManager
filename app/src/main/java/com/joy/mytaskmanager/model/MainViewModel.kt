@@ -1,5 +1,6 @@
 package com.joy.mytaskmanager.model
 
+import android.content.Context
 import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
@@ -7,16 +8,24 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.joy.mytaskmanager.dao.TaskDao
 import com.joy.mytaskmanager.data.Task
+import com.joy.mytaskmanager.repository.TaskRepository
+import com.joy.mytaskmanager.repository.TaskRepositoryImpl
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-class TaskViewModelFactory(private val taskDao: TaskDao) : ViewModelProvider.Factory {
+class TaskViewModelFactory(
+    private val taskDao: TaskDao,
+    private val applicationContext: Context
+) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+            // Repository instance
+            val repository: TaskRepository = TaskRepositoryImpl(taskDao, applicationContext)
+
             @Suppress("UNCHECKED_CAST")
-            return MainViewModel(taskDao) as T
+            return MainViewModel(repository) as T
         }
 
         throw IllegalArgumentException("Unknown ViewModel class")
@@ -24,8 +33,8 @@ class TaskViewModelFactory(private val taskDao: TaskDao) : ViewModelProvider.Fac
 }
 
 
-class MainViewModel(private val taskDao: TaskDao) : ViewModel() {
-    val tasks: LiveData<List<Task>> = taskDao.allTasks()
+class MainViewModel(private val taskRepository: TaskRepository) : ViewModel() {
+    val tasks: LiveData<List<Task>> = taskRepository.allTasks()
 
     private val _selectedTask = MutableStateFlow<Task?>(null)
     val selectedTask: StateFlow<Task?> = _selectedTask.asStateFlow()
@@ -47,22 +56,22 @@ class MainViewModel(private val taskDao: TaskDao) : ViewModel() {
     fun updateTask(task: Task) {
         Log.i("MainViewModel", "updateTask(): $task")
         viewModelScope.launch {
-            taskDao.update(task)
-            _selectedTask.emit(taskDao.task(task.id))
+            taskRepository.update(task)
+            _selectedTask.emit(taskRepository.task(task.id))
         }
     }
 
     fun addTask(newTask: Task) {
         Log.i("MainViewModel", "addTask(): $newTask")
         viewModelScope.launch {
-            taskDao.insert(newTask)
+            taskRepository.add(newTask)
         }
     }
 
     fun deleteTask(taskId: Int) {
         Log.i("MainViewModel", "deleteTask(): ID=$taskId")
         viewModelScope.launch {
-            taskDao.delete(taskId)
+            taskRepository.delete(taskId)
         }
     }
 }

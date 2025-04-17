@@ -35,4 +35,8 @@
     <string name="toast_pick_start_and_end">Pick Start &amp; End</string>
     <string name="toast_pick_start">Pick Start</string>
     <string name="toast_pick_end">Pick End</string>
+
+    <!-- Notification -->
+    <string name="notification_channel_name">Task Reminder</string>
+    <string name="notification_channel_description">Notification for upcoming task deadlines</string>
 </resources>

@@ -17,6 +17,8 @@ data class Task(
     val start: ZonedDateTime,
     @ColumnInfo
     val end: ZonedDateTime,
+    @ColumnInfo(defaultValue = "0")
+    val isNotificationEnabled: Boolean = false
 ) {
     override fun toString(): String =
         "[id=$id $type \"$description\" $start~$end]"

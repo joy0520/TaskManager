@@ -25,6 +25,8 @@ import com.joy.mytaskmanager.fragment.DeleteTaskDialogFragment
 import com.joy.mytaskmanager.fragment.TaskFragment
 import com.joy.mytaskmanager.model.MainViewModel
 import com.joy.mytaskmanager.model.TaskViewModelFactory
+import com.joy.mytaskmanager.util.isLandscape
+import com.joy.mytaskmanager.util.isPortrait
 import kotlinx.coroutines.launch
 
 class MainActivity : AppCompatActivity() {
@@ -41,7 +43,7 @@ class MainActivity : AppCompatActivity() {
 
     private val taskDb by lazy { TaskDb.getDatabase(applicationContext) }
     private val taskDao by lazy { taskDb.taskDao() }
-    internal val taskViewModelFactory by lazy { TaskViewModelFactory(taskDao) }
+    internal val taskViewModelFactory by lazy { TaskViewModelFactory(taskDao, applicationContext) }
 
     private val viewModel: MainViewModel by viewModels { taskViewModelFactory }
 
@@ -345,14 +347,6 @@ class MainActivity : AppCompatActivity() {
         }
     }
     // --- setup ---
-
-    private fun isPortrait(newConfig: Configuration? = null): Boolean =
-        (newConfig?.orientation ?: resources.configuration.orientation) ==
-                Configuration.ORIENTATION_PORTRAIT
-
-    private fun isLandscape(newConfig: Configuration? = null): Boolean =
-        (newConfig?.orientation ?: resources.configuration.orientation) ==
-                Configuration.ORIENTATION_LANDSCAPE
 
     private fun navigateToDetail() {
         if (!::navController.isInitialized || !isLandscape()) return

@@ -1,6 +1,5 @@
 package com.joy.mytaskmanager.fragment
 
-import android.content.res.Configuration
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -15,6 +14,7 @@ import com.joy.mytaskmanager.MainActivity
 import com.joy.mytaskmanager.R
 import com.joy.mytaskmanager.adapter.TaskAdapter
 import com.joy.mytaskmanager.model.MainViewModel
+import com.joy.mytaskmanager.util.isPortrait
 
 /**
  * A fragment representing a list of Items.
@@ -59,16 +59,10 @@ class TaskFragment : Fragment() {
         Log.i(tag, "onStop()")
     }
 
-    private fun isPortrait(): Boolean =
-        resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-    private fun isLandscape(): Boolean =
-        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-
     private fun handleTaskClick(taskId: Int) {
         viewModel.selectTask(taskId)
 
-        if (isPortrait()) {
+        if (requireContext().isPortrait()) {
             try {
                 findNavController().navigate(
                     R.id.action_taskFragment_to_detailFragment,

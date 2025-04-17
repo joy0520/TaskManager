@@ -17,14 +17,11 @@ interface TaskDao {
     @Update
     suspend fun update(task: Task)
 
-    @Delete
-    suspend fun delete(task: Task)
-
     @Query("DELETE FROM task WHERE id = :taskId")
     suspend fun delete(taskId: Int)
 
     @Query("SELECT * from task WHERE id= :id")
-    suspend fun task(id: Int): Task
+    suspend fun task(id: Int): Task?
 
     @Query("SELECT * from task ORDER BY id ASC")
     fun allTasks(): LiveData<List<Task>>

@@ -86,10 +86,4 @@ class DetailFragment : Fragment() {
             }
         }
     }
-
-    private fun isPortrait(): Boolean =
-        resources.configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-
-    private fun isLandscape(): Boolean =
-        resources.configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 }
