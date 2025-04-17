@@ -12,7 +12,6 @@
         android:id="@+id/spinner_type"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:gravity="center"
         app:layout_constraintBottom_toTopOf="@id/edit_description"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,7 +26,6 @@
         android:gravity="center"
         android:hint="@string/hint_edit_description"
         android:inputType="text"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/spinner_type"
@@ -108,6 +106,17 @@
         app:constraint_referenced_ids="end_date_time, end_date_time_picker_button"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/switch_notification_enable"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="20dp"
+        android:text="@string/switch_notification_title"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/end_bottom_barrier" />
 
     <Button
         android:id="@+id/button_save"

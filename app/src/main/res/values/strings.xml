@@ -23,6 +23,9 @@
     <string name="button_delete">Delete</string>
     <string name="button_cancel">Cancel</string>
 
+    <!-- Switch -->
+    <string name="switch_notification_title">Enable Notification</string>
+
     <!-- hints -->
     <string name="hint_edit_description">Task description.</string>
     <string name="hint_select_date_time">Select date and time</string>

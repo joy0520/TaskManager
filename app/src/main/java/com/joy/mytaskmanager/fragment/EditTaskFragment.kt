@@ -15,6 +15,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.datepicker.MaterialDatePicker
+import com.google.android.material.materialswitch.MaterialSwitch
 import com.google.android.material.timepicker.MaterialTimePicker
 import com.google.android.material.timepicker.TimeFormat
 import com.joy.mytaskmanager.R
@@ -36,6 +37,7 @@ class EditTaskFragment : Fragment() {
     private lateinit var buttonStartDateTimePicker: ImageButton
     private lateinit var endDateTime: TextView
     private lateinit var buttonEndDateTimePicker: ImageButton
+    private lateinit var switchNotificationEnabled: MaterialSwitch
     private lateinit var saveButton: Button
     private lateinit var cancelButton: Button
 
@@ -68,7 +70,7 @@ class EditTaskFragment : Fragment() {
             descriptionEditor.setText(task.description)
 
             setupButtons(task)
-
+            setupSwitches(task)
             updateDateTimeDisplay(task)
         }
     }
@@ -80,6 +82,7 @@ class EditTaskFragment : Fragment() {
         buttonStartDateTimePicker = view.findViewById(R.id.start_date_time_picker_button)
         endDateTime = view.findViewById(R.id.end_date_time)
         buttonEndDateTimePicker = view.findViewById(R.id.end_date_time_picker_button)
+        switchNotificationEnabled = view.findViewById(R.id.switch_notification_enable)
         saveButton = view.findViewById(R.id.button_save)
         cancelButton = view.findViewById(R.id.button_cancel)
     }
@@ -89,6 +92,10 @@ class EditTaskFragment : Fragment() {
         buttonEndDateTimePicker.setOnClickListener { showDatePickerDialog(false) }
         saveButton.setOnClickListener { if (isValidDateTime()) saveTask(task) }
         cancelButton.setOnClickListener { findNavController().popBackStack() }
+    }
+
+    private fun setupSwitches(task: Task) {
+        switchNotificationEnabled.isChecked = task.isNotificationEnabled
     }
 
     private fun showDatePickerDialog(isStart: Boolean) {
@@ -113,8 +120,8 @@ class EditTaskFragment : Fragment() {
     }
 
     private fun showTimePickerDialog(isStart: Boolean, selectedDateMillis: Long) {
-        val defaultDt =
-            (if (isStart) selectedStartDateTime else selectedEndDateTime) ?: ZonedDateTime.now()
+        val defaultDt = (if (isStart) selectedStartDateTime else selectedEndDateTime)
+            ?: ZonedDateTime.now()
 
         val timePicker = MaterialTimePicker.Builder()
             .setTimeFormat(TimeFormat.CLOCK_12H)
@@ -169,7 +176,8 @@ class EditTaskFragment : Fragment() {
                 description = descriptionEditor.text.toString(),
                 type = selectedType,
                 start = selectedStartDateTime!!,
-                end = selectedEndDateTime!!
+                end = selectedEndDateTime!!,
+                isNotificationEnabled = switchNotificationEnabled.isChecked
             )
         )
         findNavController().popBackStack()
